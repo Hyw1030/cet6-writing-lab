@@ -68,8 +68,21 @@
 
           <div class="actions-row">
             <button class="button" id="insertTemplate" type="button">插入模板</button>
+            <button class="button ghost" id="toggleBreakdown" type="button">查看拆解</button>
             <button class="button ghost" id="savePractice" type="button">保存这篇</button>
             <button class="button ghost" id="clearEssay" type="button">清空</button>
+          </div>
+
+          <div class="template-breakdown" id="templateBreakdown" aria-live="polite">
+            <div class="breakdown-head">
+              <h3>模板拆解</h3>
+              <div class="legend">
+                <span><i class="legend-core"></i>固定模板</span>
+                <span><i class="legend-topic"></i>按题目替换</span>
+                <span><i class="legend-tune"></i>可按题型微调</span>
+              </div>
+            </div>
+            <div class="breakdown-body" id="breakdownBody"></div>
           </div>
         </section>
 

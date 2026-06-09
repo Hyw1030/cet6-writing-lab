@@ -106,9 +106,9 @@ const imageNames = [
   "微信图片_20260609094059_78_51.jpg"
 ];
 
-const templateText = `Recently, more and more people have begun to realize the importance of XX. In a world full of changes and challenges, XX is no longer a minor choice, but an essential ability/quality for personal growth and future development. Therefore, it is necessary for us to understand why XX matters so much.
+const templateText = `Recently, more and more people have begun to realize the importance of XX. In a world full of changes and challenges, XX is no longer a minor choice, but an essential ability/quality for personal growth and future development.
 
-First, XX helps people deal with problems more effectively. For college students, it can improve learning efficiency, broaden their horizons and enable them to make wiser decisions. For example, students who attach importance to XX are more likely to stay focused, overcome difficulties and make steady progress in their study and life. Second, XX also plays a key role in long-term development. It not only builds confidence and independence, but also prepares people for future competition in society. Without XX, one may easily fall behind in a rapidly changing world.
+First, XX helps people deal with problems more effectively. For college students, it can improve learning efficiency, broaden their horizons and enable them to make wiser decisions. For example, students who attach importance to XX are more likely to stay focused and make steady progress. Second, XX also plays a key role in long-term development. It builds confidence and independence, and prepares people for future competition in society.
 
 In conclusion, XX is closely related to individual development and social progress. It is high time that we paid more attention to it and took practical action to develop this valuable ability/quality. Only in this way can we better face future challenges and create a more promising future.`;
 
@@ -157,12 +157,68 @@ function paragraphCount(text) {
   return text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean).length;
 }
 
+function escapeHtml(text) {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function highlightKeyword(text, keyword) {
+  const safeText = escapeHtml(text);
+  if (!keyword || keyword === "XX") {
+    return safeText.replaceAll("XX", '<span class="part-topic">XX</span>');
+  }
+  const safeKeyword = escapeHtml(keyword);
+  return safeText.replaceAll(safeKeyword, `<span class="part-topic">${safeKeyword}</span>`);
+}
+
+function renderTemplateBreakdown() {
+  const keyword = $("#topicKeyword").value.trim() || "XX";
+  const parts = [
+    {
+      label: "开头固定模板：引出现象和重要性",
+      type: "core",
+      text: "Recently, more and more people have begun to realize the importance of XX. In a world full of changes and challenges, XX is no longer a minor choice, but an essential ability/quality for personal growth and future development."
+    },
+    {
+      label: "正文固定模板：两个好处，适合大多数重要性题",
+      type: "core",
+      text: "First, XX helps people deal with problems more effectively. For college students, it can improve learning efficiency, broaden their horizons and enable them to make wiser decisions."
+    },
+    {
+      label: "例子句：这里最适合按题目换一换",
+      type: "tune",
+      text: "For example, students who attach importance to XX are more likely to stay focused and make steady progress."
+    },
+    {
+      label: "正文固定模板：补第二个长期作用",
+      type: "core",
+      text: "Second, XX also plays a key role in long-term development. It builds confidence and independence, and prepares people for future competition in society."
+    },
+    {
+      label: "结尾固定模板：总结并呼吁行动",
+      type: "core",
+      text: "In conclusion, XX is closely related to individual development and social progress. It is high time that we paid more attention to it and took practical action to develop this valuable ability/quality. Only in this way can we better face future challenges and create a more promising future."
+    }
+  ];
+
+  $("#breakdownBody").innerHTML = parts
+    .map((part) => {
+      const text = highlightKeyword(part.text.replaceAll("XX", keyword), keyword);
+      return `<div class="breakdown-part"><span class="breakdown-label">${part.label}</span><span class="part-${part.type}">${text}</span></div>`;
+    })
+    .join("");
+}
+
 function updateStats() {
   const text = $("#essayInput").value;
   $("#wordCount").textContent = wordCount(text);
   $("#paragraphCount").textContent = paragraphCount(text);
   $("#saveState").textContent = "已自动保存";
   localStorage.setItem("cet6EssayDraft", text);
+  renderTemplateBreakdown();
   updateCodexRequest();
 }
 
@@ -364,7 +420,13 @@ function bindEvents() {
     const keyword = $("#topicKeyword").value.trim() || "XX";
     $("#essayInput").value = templateText.replaceAll("XX", keyword);
     updateStats();
+    $("#templateBreakdown").classList.add("show");
     toast("模板已插入");
+  });
+
+  $("#toggleBreakdown").addEventListener("click", () => {
+    $("#templateBreakdown").classList.toggle("show");
+    renderTemplateBreakdown();
   });
 
   $("#clearEssay").addEventListener("click", () => {
