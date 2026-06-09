@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>六级作文训练台</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">CET-6 Writing Lab</p>
+        <h1>六级作文训练台</h1>
+      </div>
+      <div class="top-actions">
+        <button class="icon-button" id="themeToggle" type="button" title="切换明暗主题" aria-label="切换明暗主题">◐</button>
+        <a class="button ghost" href="./README.md" target="_blank" rel="noreferrer">部署说明</a>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar" aria-label="功能导航">
+        <button class="nav-item active" data-panel="practice">练作文</button>
+        <button class="nav-item" data-panel="template">背模板</button>
+        <button class="nav-item" data-panel="verify">真题验证</button>
+        <button class="nav-item" data-panel="review">自查评分</button>
+        <button class="nav-item" data-panel="codex">让 Codex 改</button>
+        <button class="nav-item" data-panel="sources">真题图</button>
+      </aside>
+
+      <section class="content">
+        <section class="panel active" id="practice">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Practice</p>
+              <h2>30 分钟实战</h2>
+            </div>
+            <div class="timer">
+              <span id="timerText">30:00</span>
+              <button class="button compact" id="timerStart" type="button">开始</button>
+              <button class="button compact ghost" id="timerReset" type="button">重置</button>
+            </div>
+          </div>
+
+          <div class="tool-grid">
+            <label class="field">
+              <span>题目类型</span>
+              <select id="topicSelect"></select>
+            </label>
+            <label class="field">
+              <span>题目核心词 XX</span>
+              <input id="topicKeyword" type="text" placeholder="例如 digital literacy" />
+            </label>
+          </div>
+
+          <div class="prompt-box" id="topicPrompt"></div>
+
+          <label class="field essay-field">
+            <span>你的作文</span>
+            <textarea id="essayInput" spellcheck="false" placeholder="在这里写 150-200 词。草稿会自动保存在浏览器里。"></textarea>
+          </label>
+
+          <div class="stats">
+            <span><strong id="wordCount">0</strong> words</span>
+            <span><strong id="paragraphCount">0</strong> 段</span>
+            <span id="saveState">已自动保存</span>
+          </div>
+
+          <div class="actions-row">
+            <button class="button" id="insertTemplate" type="button">插入模板</button>
+            <button class="button ghost" id="savePractice" type="button">保存这篇</button>
+            <button class="button ghost" id="clearEssay" type="button">清空</button>
+          </div>
+        </section>
+
+        <section class="panel" id="template">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Template</p>
+              <h2>最后两天可背模板</h2>
+            </div>
+            <button class="button compact" data-copy="#mainTemplate" type="button">复制模板</button>
+          </div>
+          <article class="template-card" id="mainTemplate">
+            <p>Recently, more and more people have begun to realize the importance of <mark>XX</mark>. In a world full of changes and challenges, <mark>XX</mark> is no longer a minor choice, but an essential ability/quality for personal growth and future development. Therefore, it is necessary for us to understand why <mark>XX</mark> matters so much.</p>
+            <p>First, <mark>XX</mark> helps people deal with problems more effectively. For college students, it can improve learning efficiency, broaden their horizons and enable them to make wiser decisions. For example, students who attach importance to <mark>XX</mark> are more likely to stay focused, overcome difficulties and make steady progress in their study and life. Second, <mark>XX</mark> also plays a key role in long-term development. It not only builds confidence and independence, but also prepares people for future competition in society. Without <mark>XX</mark>, one may easily fall behind in a rapidly changing world.</p>
+            <p>In conclusion, <mark>XX</mark> is closely related to individual development and social progress. It is high time that we paid more attention to it and took practical action to develop this valuable ability/quality. Only in this way can we better face future challenges and create a more promising future.</p>
+          </article>
+
+          <div class="split">
+            <section>
+              <h3>替换词包</h3>
+              <div class="chips" id="keywordChips"></div>
+            </section>
+            <section>
+              <h3>技术/风险题微调</h3>
+              <div class="note">
+                <p>When used properly, XX can bring great convenience to our study, work and daily life.</p>
+                <p>However, if people depend on it too much or use it irresponsibly, it may waste their time, weaken their judgment and even cause unnecessary problems.</p>
+                <p>Therefore, we should make full use of its advantages while avoiding its possible risks.</p>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="panel" id="verify">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Verification</p>
+              <h2>按真题反套验证</h2>
+            </div>
+          </div>
+          <div class="verify-list" id="verifyList"></div>
+        </section>
+
+        <section class="panel" id="review">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Scoring</p>
+              <h2>按六级评分标准自查</h2>
+            </div>
+            <button class="button compact" id="runCheck" type="button">检查当前作文</button>
+          </div>
+          <div class="score-grid" id="scoreGrid"></div>
+          <div class="history">
+            <h3>练习记录</h3>
+            <div id="practiceHistory" class="history-list"></div>
+          </div>
+        </section>
+
+        <section class="panel" id="codex">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Codex Loop</p>
+              <h2>把问题打包给我</h2>
+            </div>
+            <button class="button compact" id="copyCodexRequest" type="button">复制请求</button>
+          </div>
+          <p class="muted">这个纯静态网站不会把 API key 放进前端，所以没有内置联网 AI。你在这里写诉求，点复制后发到当前对话，我就能直接改网站文件、更新模板或批改作文。</p>
+          <label class="field">
+            <span>你想让我怎么改/怎么批</span>
+            <textarea id="codexNeed" class="small-textarea" placeholder="例如：帮我把这篇作文改到 11 分左右，保留我的简单句风格；或者把模板改得更适合 AI/社交媒体题。"></textarea>
+          </label>
+          <label class="field">
+            <span>自动生成的请求</span>
+            <textarea id="codexRequest" class="small-textarea readonly" readonly></textarea>
+          </label>
+        </section>
+
+        <section class="panel" id="sources">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Sources</p>
+              <h2>你整理的真题图</h2>
+            </div>
+          </div>
+          <div class="gallery" id="sourceGallery"></div>
+        </section>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
