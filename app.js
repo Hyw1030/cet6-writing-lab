@@ -388,7 +388,7 @@ function updateCodexRequest() {
   const topic = topics[Number($("#topicSelect").value)] || topics[0];
   const need = $("#codexNeed").value.trim() || "请帮我批改这篇六级作文，指出最影响得分的问题，并给出适合最后两天背诵的修改版。";
   const essay = $("#essayInput").value.trim() || "（我还没有写作文）";
-  $("#codexRequest").value = `我正在使用你做的 cet6-writing-lab 网站练六级作文。
+  $("#codexRequest").value = `我正在使用你做的 cet6-writing-lab 网站练六级作文/翻译。
 
 题目类型：${topic.title}
 题目要求：${topic.prompt}

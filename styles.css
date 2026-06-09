@@ -389,6 +389,53 @@ mark {
   line-height: 1.7;
 }
 
+.translation-card {
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 16px 0;
+}
+
+.meaning-list {
+  margin: 0;
+  padding-left: 22px;
+  line-height: 1.8;
+}
+
+.meaning-list li + li {
+  margin-top: 6px;
+}
+
+.sentence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sentence-grid div {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.sentence-grid p {
+  margin: 8px 0 6px;
+  color: var(--accent);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.sentence-grid span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.chip.static {
+  cursor: default;
+}
+
 .verify-list {
   display: grid;
   gap: 12px;
@@ -521,6 +568,7 @@ mark {
 
   .tool-grid,
   .split,
+  .sentence-grid,
   .score-grid,
   .verify-item {
     grid-template-columns: 1fr;
