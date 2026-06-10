@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>奶茶店小程序选择器</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f3ed;
+      --panel: #fffdf9;
+      --ink: #241c17;
+      --muted: #74685f;
+      --line: #eadfd3;
+      --brand: #0f766e;
+      --brand-soft: #dff5f1;
+      --accent: #d97706;
+      --accent-soft: #fff2d9;
+      --danger: #b91c1c;
+      --shadow: 0 18px 48px rgba(45, 32, 20, .12);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      padding: 28px;
+      background: #2c2018;
+      color: #fff8ee;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: #fbbf24;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .intro {
+      margin: 18px 0 26px;
+      color: #e9d8c9;
+      font-size: 15px;
+    }
+
+    .nav-card {
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .06);
+    }
+
+    .nav-card h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: #f6eadc;
+      font-size: 14px;
+    }
+
+    .steps li {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+    }
+
+    .step-no {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 22px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #f59e0b;
+      color: #241c17;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .main {
+      padding: 32px;
+    }
+
+    .workspace {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .section {
+      padding: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:last-child {
+      border-bottom: 0;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 19px;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .choice-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .flow-strip {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .flow-step {
+      min-height: 76px;
+      display: grid;
+      align-content: center;
+      gap: 5px;
+      padding: 10px;
+      border: 1px solid #d7c3ad;
+      border-radius: var(--radius);
+      background: #fff7e8;
+      color: #3d3026;
+      text-align: center;
+    }
+
+    .flow-step strong {
+      font-size: 14px;
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .entry-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 12px;
+      border-radius: var(--radius);
+      background: var(--brand-soft);
+      color: #174540;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .entry-note b {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      border-radius: 50%;
+      background: var(--brand);
+      color: white;
+    }
+
+    .choice-grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .choice {
+      position: relative;
+      display: grid;
+      gap: 4px;
+      padding: 14px 14px 14px 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffaf2;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .choice:hover {
+      transform: translateY(-1px);
+      border-color: #d7c3ad;
+    }
+
+    .choice input {
+      position: absolute;
+      left: 14px;
+      top: 17px;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--brand);
+    }
+
+    .choice strong {
+      font-size: 15px;
+    }
+
+    .choice span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .choice:has(input:checked) {
+      border-color: var(--brand);
+      background: var(--brand-soft);
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 13px;
+      background: #fffaf4;
+      color: var(--ink);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, .12);
+    }
+
+    .summary {
+      position: sticky;
+      top: 24px;
+      overflow: hidden;
+    }
+
+    .summary-top {
+      padding: 22px;
+      background: #fff7e8;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #7c3d00;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .result-block {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .result-block:last-child {
+      border-bottom: 0;
+    }
+
+    .result-block h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .result-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .result-list li {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tick {
+      width: 22px;
+      height: 22px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .warning {
+      color: var(--danger);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 18px 22px 22px;
+    }
+
+    .button {
+      border: 0;
+      border-radius: var(--radius);
+      padding: 11px 14px;
+      background: var(--brand);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .button.secondary {
+      background: #efe3d4;
+      color: #3d3026;
+    }
+
+    .toast {
+      min-height: 22px;
+      color: var(--brand);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 980px) {
+      .app,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar,
+      .summary {
+        position: static;
+        height: auto;
+      }
+
+      .main {
+        padding: 18px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .choice-grid.two {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <p class="eyebrow">Milk Tea Mini Program</p>
+      <h1>奶茶店到店点单小程序选择器</h1>
+      <p class="intro">用于梳理到店点单小程序的第一版范围。按真实门店情况点选，右侧会自动生成一份功能清单。</p>
+      <div class="nav-card">
+        <h2>怎么用</h2>
+        <ol class="steps">
+          <li><span class="step-no">1</span><span>先选门店要放哪些二维码入口。</span></li>
+          <li><span class="step-no">2</span><span>再选饮品规格、接单出餐和后台需要。</span></li>
+          <li><span class="step-no">3</span><span>最后看右侧生成的功能清单。</span></li>
+        </ol>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="workspace">
+        <form class="panel" id="plannerForm">
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>最小点单流程</h2>
+                <p class="hint">先只保留一人经营能跑通的闭环，其他营销功能后面再说。</p>
+              </div>
+            </div>
+            <div class="flow-strip" aria-label="最小点单流程">
+              <div class="flow-step"><strong>扫码</strong><span>进入菜单</span></div>
+              <div class="flow-step"><strong>选饮品</strong><span>分类和商品</span></div>
+              <div class="flow-step"><strong>选规格</strong><span>糖冰加料</span></div>
+              <div class="flow-step"><strong>付款</strong><span>微信支付</span></div>
+              <div class="flow-step"><strong>取号</strong><span>等待叫号</span></div>
+              <div class="flow-step"><strong>出杯</strong><span>完成订单</span></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>1. 二维码准备放在哪里？</h2>
+                <p class="hint">这些可以多选，本质都是扫码进入同一个点单小程序。</p>
+              </div>
+            </div>
+            <div class="entry-note">
+              <b>多</b>
+              <span>收银台、桌贴、海报不是三套功能，只是三个入口。选几个入口，后台都只接收同一类订单。</span>
+            </div>
+            <div class="choice-grid">
+              <label class="choice">
+                <input type="checkbox" name="entry" value="收银台二维码" checked>
+                <strong>收银台二维码点单</strong>
+                <span>顾客到店后扫码，自己选饮品并付款，适合小店起步。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="entry" value="桌贴/海报二维码">
+                <strong>桌贴/海报二维码点单</strong>
+                <span>顾客在座位或门口扫码，下单后按取餐号取杯。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="entry" value="现场引导扫码">
+                <strong>现场引导扫码</strong>
+                <span>顾客不熟时，经营者现场引导扫码，订单仍统一进入后台。</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>2. 饮品需要哪些选择？</h2>
+                <p class="hint">勾选真实会用到的，越少越好维护。</p>
+              </div>
+            </div>
+            <div class="choice-grid two">
+              <label class="choice">
+                <input type="checkbox" name="spec" value="杯型" checked>
+                <strong>杯型</strong>
+                <span>中杯、大杯等。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="spec" value="冰量" checked>
+                <strong>冰量</strong>
+                <span>正常冰、少冰、去冰、热。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="spec" value="糖度" checked>
+                <strong>糖度</strong>
+                <span>正常糖、七分、五分、三分、无糖。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="spec" value="加料" checked>
+                <strong>加料</strong>
+                <span>珍珠、椰果、布丁、芋圆等。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="spec" value="备注">
+                <strong>备注</strong>
+                <span>少茶、多奶、分开装等特殊要求。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="spec" value="数量" checked>
+                <strong>数量</strong>
+                <span>同款多杯、购物车加减。</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>3. 自己怎么接单和出餐？</h2>
+                <p class="hint">一个人经营时，后台要尽量简单、清楚、少操作。</p>
+              </div>
+            </div>
+            <div class="choice-grid two">
+              <label class="choice">
+                <input type="checkbox" name="staff" value="订单列表" checked>
+                <strong>订单列表</strong>
+                <span>显示新订单、商品、规格、备注。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="staff" value="订单状态" checked>
+                <strong>订单状态</strong>
+                <span>待制作、制作中、待取餐、已完成。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="staff" value="取餐号" checked>
+                <strong>取餐号</strong>
+                <span>比如 001、002，方便叫号。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="staff" value="小票打印">
+                <strong>小票打印</strong>
+                <span>如果有打印机，可以后续接入。</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>4. 自己每天需要管理什么？</h2>
+                <p class="hint">第一版只保留每天必须改的东西。</p>
+              </div>
+            </div>
+            <div class="choice-grid two">
+              <label class="choice">
+                <input type="checkbox" name="admin" value="商品管理" checked>
+                <strong>商品管理</strong>
+                <span>新增、修改名称、价格、图片。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="admin" value="上下架/售罄" checked>
+                <strong>上下架/售罄</strong>
+                <span>没货时立刻隐藏或标记售罄。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="admin" value="规格管理" checked>
+                <strong>规格管理</strong>
+                <span>维护糖度、冰量、加料和价格。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="admin" value="营业状态" checked>
+                <strong>营业状态</strong>
+                <span>营业、暂停营业、营业时间。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="admin" value="订单查询">
+                <strong>订单查询</strong>
+                <span>看今天和历史订单。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="admin" value="销售统计">
+                <strong>销售统计</strong>
+                <span>看销售额、热卖饮品，可放第二版。</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>5. 先不做哪些东西？</h2>
+                <p class="hint">这些默认排除，避免第一版变复杂。</p>
+              </div>
+            </div>
+            <div class="choice-grid two">
+              <label class="choice">
+                <input type="checkbox" name="exclude" value="外卖配送" checked>
+                <strong>外卖配送</strong>
+                <span>第一版只服务到店点单。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="exclude" value="优惠券" checked>
+                <strong>优惠券</strong>
+                <span>先不做营销活动。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="exclude" value="会员积分" checked>
+                <strong>会员积分</strong>
+                <span>等点单流程稳定后再说。</span>
+              </label>
+              <label class="choice">
+                <input type="checkbox" name="exclude" value="储值卡" checked>
+                <strong>储值卡</strong>
+                <span>涉及资金和规则，先放后面。</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>6. 现在能准备什么？</h2>
+                <p class="hint">把这些填出来，就能开始跟开发沟通。</p>
+              </div>
+            </div>
+            <label class="field">
+              <span>门店名称</span>
+              <input id="shopName" type="text" placeholder="例如：某某奶茶" />
+            </label>
+            <label class="field">
+              <span>备注/特殊情况</span>
+              <textarea id="notes" placeholder="例如：只有一家店；暂时没有打印机；菜单还没拍图。"></textarea>
+            </label>
+          </section>
+        </form>
+
+        <aside class="panel summary" aria-live="polite">
+          <div class="summary-top">
+            <p class="eyebrow">Auto Scope</p>
+            <h2 id="summaryTitle">第一版建议：到店扫码点单</h2>
+            <p class="hint" id="summaryDesc">先把顾客点单、微信支付、自己出餐这条流程跑通。</p>
+            <div class="badge-row" id="badges"></div>
+          </div>
+
+          <div class="result-block">
+            <h3>顾客端功能</h3>
+            <ul class="result-list" id="customerList"></ul>
+          </div>
+
+          <div class="result-block">
+            <h3>接单/后台功能</h3>
+            <ul class="result-list" id="adminList"></ul>
+          </div>
+
+          <div class="result-block">
+            <h3>开工前要准备</h3>
+            <ul class="result-list" id="prepList"></ul>
+          </div>
+
+          <div class="result-block">
+            <h3>暂时不做</h3>
+            <ul class="result-list" id="excludeList"></ul>
+          </div>
+
+          <div class="actions">
+            <button class="button" type="button" id="copyBtn">复制需求清单</button>
+            <button class="button secondary" type="button" id="resetBtn">恢复推荐选择</button>
+            <span class="toast" id="toast"></span>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const form = document.querySelector("#plannerForm");
+    const shopName = document.querySelector("#shopName");
+    const notes = document.querySelector("#notes");
+    const toast = document.querySelector("#toast");
+
+    const baseCustomer = ["扫码进入小程序", "浏览菜单分类", "选择饮品和规格", "加入购物车", "确认订单", "微信支付", "获得取餐号", "查看订单状态"];
+    const prepBase = ["菜单表：商品名、分类、价格", "规格规则：杯型、冰量、糖度、加料", "二维码物料：收银台牌、桌贴或海报", "商品图片或临时展示图", "取餐号规则", "微信小程序账号", "微信支付商户号", "营业执照和食品经营许可证"];
+
+    function checkedValues(name) {
+      return [...form.querySelectorAll(`[name="${name}"]:checked`)].map(item => item.value);
+    }
+
+    function makeList(target, items, warn = false) {
+      target.innerHTML = items.map(item => `<li><span class="tick">${warn ? "!" : "✓"}</span><span>${item}</span></li>`).join("");
+    }
+
+    function render() {
+      const entries = checkedValues("entry");
+      const specs = checkedValues("spec");
+      const staff = checkedValues("staff");
+      const admin = checkedValues("admin");
+      const exclude = checkedValues("exclude");
+      const titleName = shopName.value.trim() || "奶茶店";
+
+      document.querySelector("#summaryTitle").textContent = `${titleName}第一版：到店扫码点单`;
+      document.querySelector("#summaryDesc").textContent = "顾客从任意二维码进入同一个菜单，付款后拿取餐号，经营者按订单制作。";
+
+      const badges = ["扫码入口", "菜单规格", "微信支付", "取餐号", "自己接单"];
+      document.querySelector("#badges").innerHTML = badges.map(item => `<span class="badge">${item}</span>`).join("");
+
+      const customer = [...baseCustomer];
+      if (entries.length) customer.splice(1, 0, `扫码入口：${entries.join("、")}`);
+      if (specs.length) customer.push(`规格选择：${specs.join("、")}`);
+
+      const adminList = [];
+      staff.forEach(item => adminList.push(item));
+      admin.forEach(item => adminList.push(item));
+
+      const prep = [...prepBase];
+      if (staff.includes("小票打印")) prep.push("确认打印机型号与接入方式");
+      if (notes.value.trim()) prep.push(`备注：${notes.value.trim()}`);
+
+      makeList(document.querySelector("#customerList"), customer);
+      makeList(document.querySelector("#adminList"), [...new Set(adminList)]);
+      makeList(document.querySelector("#prepList"), prep);
+      makeList(document.querySelector("#excludeList"), exclude.length ? exclude : ["暂未排除功能，需要再确认"], exclude.length === 0);
+    }
+
+    function summaryText() {
+      const titleName = shopName.value.trim() || "奶茶店";
+      return [
+        `${titleName}小程序第一版范围`,
+        "",
+        `扫码入口：${checkedValues("entry").join("、") || "待确认"}`,
+        "",
+        "顾客端：",
+        ...[...document.querySelectorAll("#customerList li span:last-child")].map(item => `- ${item.textContent}`),
+        "",
+        "接单/后台：",
+        ...[...document.querySelectorAll("#adminList li span:last-child")].map(item => `- ${item.textContent}`),
+        "",
+        "开工前准备：",
+        ...[...document.querySelectorAll("#prepList li span:last-child")].map(item => `- ${item.textContent}`),
+        "",
+        "暂时不做：",
+        ...[...document.querySelectorAll("#excludeList li span:last-child")].map(item => `- ${item.textContent}`)
+      ].join("\n");
+    }
+
+    async function copySummary() {
+      await navigator.clipboard.writeText(summaryText());
+      toast.textContent = "已复制";
+      window.setTimeout(() => toast.textContent = "", 1600);
+    }
+
+    function resetRecommended() {
+      form.reset();
+      shopName.value = "";
+      notes.value = "";
+      render();
+    }
+
+    form.addEventListener("input", render);
+    document.querySelector("#copyBtn").addEventListener("click", copySummary);
+    document.querySelector("#resetBtn").addEventListener("click", resetRecommended);
+    render();
+  </script>
+</body>
+</html>
